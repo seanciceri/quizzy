@@ -52,14 +52,16 @@ function answerClasses(answer) {
     
     <!-- SCHERMATA INIZIALE -->
     <div v-if="gameStatus === 'idle'" class="text-center">
-      <h1 class="text-[200px] font-bold mb-4 text-[#FAB724] font-titanone [-webkit-text-stroke:5px_#8337E4]">QUIZZY</h1> 
+      <h1 class="text-6xl sm:text-8xl md:text-[140px] lg:text-[180px] font-black mb-4 text-[#FAB724] font-titanone text-center [-webkit-text-stroke:5px_#8337E4]">
+  QUIZZY
+</h1>
       <p class="text-slate-400 mb-6">{{ errorMessage }}</p>
-      <button
-        @click="startGame"
-        class="bg-[#FCBC2C] hover:bg-[#F5A900] px-20 py-3 rounded-full text-[50px] font-black transition-colors text-[#29165B] font-nunito" 
-      >
-        START
-      </button>
+        <button
+    @click="startGame"
+    class="bg-[#FCBC2C] hover:bg-[#F5A900] px-8 sm:px-12 md:px-16 lg:px-20 py-3 rounded-full text-2xl sm:text-3xl md:text-4xl lg:text-[50px] font-black transition-colors text-[#29165B] font-nunito"
+  >
+    START
+  </button>
     </div>
 
     <!-- CARICAMENTO -->
@@ -120,7 +122,7 @@ function answerClasses(answer) {
         <button
           v-else-if="isAnswerRevealed && selectedAnswer === currentQuestion.correct_answer"
           @click="nextQuestion"
-          class="bg-[blue-600] hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold"
+          class="bg-[#F5A905] hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold"
         >
           Prossima domanda
         </button>
