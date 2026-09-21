@@ -20,6 +20,7 @@ export function useQuiz() {
   const isAnswerRevealed = ref(false) // true dopo che l'utente conferma
   const gameStatus = ref('idle')     // 'idle' | 'loading' | 'playing' | 'won' | 'lost'
   const errorMessage = ref('')
+  let lostTimeoutId = null
 
   // Stato degli aiuti (lifelines)
   const lifelines = ref({
@@ -39,6 +40,7 @@ export function useQuiz() {
   // --- AZIONI (funzioni che modificano lo stato) ---
 
   async function startGame() {
+    clearTimeout(lostTimeoutId)
     gameStatus.value = 'loading'
     errorMessage.value = ''
     try {
@@ -67,18 +69,17 @@ export function useQuiz() {
   }
 
   function confirmAnswer() {
-    if (!selectedAnswer.value) return
-    isAnswerRevealed.value = true
+  if (!selectedAnswer.value) return
+  isAnswerRevealed.value = true
 
-    const isCorrect = selectedAnswer.value === currentQuestion.value.correct_answer
+  const isCorrect = selectedAnswer.value === currentQuestion.value.correct_answer
 
-    if (!isCorrect) {
-      // aspettiamo un attimo prima di finire il gioco, per far vedere il colore rosso
-      setTimeout(() => {
-        gameStatus.value = 'lost'
-      }, 2000)
-    }
+  if (!isCorrect) {
+    lostTimeoutId = setTimeout(() => {
+      gameStatus.value = 'lost'
+    }, 2000)
   }
+}
 
   function nextQuestion() {
     if (isLastQuestion.value) {
@@ -117,6 +118,7 @@ function useHint() {
 
 
   function resetGame() {
+    clearTimeout(lostTimeoutId)
     gameStatus.value = 'idle'
     questions.value = []
     currentIndex.value = 0
