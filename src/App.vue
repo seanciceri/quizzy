@@ -71,7 +71,7 @@ function answerClasses(answer) {
 
     <!-- GIOCO IN CORSO -->
     <div v-else-if="gameStatus === 'playing' && currentQuestion" class="w-full max-w-2xl">
-      <div class="flex justify-between mb-4 text-slate-400">
+      <div class="flex justify-between mb-4 text-slate-400 text-base sm:text-lg">
         <span>Domanda {{ currentIndex + 1 }} / 15</span>
         <span class="font-bold text-yellow-400">€{{ currentPrize.toLocaleString() }}</span>
       </div>
@@ -93,8 +93,8 @@ function answerClasses(answer) {
         &#x1F52E ASK THE GENIE
       </button>
 
-      <div class="bg-[#F4EEE7] rounded-xl p-6 mb-6">
-        <h2 class="text-xl text-[#29165C] font-semibold">{{ currentQuestion.question }}</h2>
+      <div class="bg-[#F4EEE7] rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 class="text-lg sm:text-xl md:text-2xl text-[#29165C] font-semibold leading-snug">{{ currentQuestion.question }}</h2>
       </div>
 
             <button
@@ -112,7 +112,7 @@ function answerClasses(answer) {
         @click="selectAnswer(answer)"
         :disabled="isAnswerRevealed"
         :class="answerClasses(answer)"
-        class="rounded-full px-4 py-3 text-left transition-colors flex items-center gap-3"
+        class="rounded-full px-3 sm:px-4 py-3 sm:py-4 text-left transition-colors flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
       >
         <span class="font-bold">{{ ['A', 'B', 'C', 'D'][index] }})</span>
         <span>{{ answer }}</span>
