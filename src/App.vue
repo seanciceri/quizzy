@@ -32,7 +32,7 @@ function answerClasses(answer) {
     }
     // ← nuovo: bordo giallo pulsante sulla risposta suggerita
     if (hintedAnswer.value === answer) {
-      return 'bg-slate-800 border-yellow-400 ring-2 ring-yellow-400 animate-pulse'
+      return 'bg-[#54C739] border-yellow-400 ring-2 ring-yellow-400 animate-pulse'
     }
     return 'bg-[#FEC64B] border-slate-600 hover:bg-[#FF9F1C] text-[#29165C] font-bold'
   }
@@ -80,35 +80,43 @@ function answerClasses(answer) {
       <button
         v-if="!lifelines.fiftyFifty.used"
         @click="useFiftyFifty"
-        class="mb-4 bg-[#8337E4] rounded-full hover:bg-[#6F24C7] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
+        class="mb-4 bg-[#2E8AFD] rounded-full hover:bg-[#176FD6] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
       >
-        ⚖️ 50:50
+        🌗 50:50
       </button>
 
-      <button
-  v-if="!lifelines.hint.used"
-  @click="useHint"
-  class="mb-4 ml-2 bg-[#F53198] rounded-full hover:bg-[#D91F7D] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
->
-   &#x1F52E ASK THE GENIE
-</button>
+            <button
+        v-if="!lifelines.hint.used"
+        @click="useHint"
+        class="mb-4 ml-2 bg-[#F53198] rounded-full hover:bg-[#D91F7D] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
+      >
+        &#x1F52E ASK THE GENIE
+      </button>
 
       <div class="bg-[#F4EEE7] rounded-xl p-6 mb-6">
         <h2 class="text-xl text-[#29165C] font-semibold">{{ currentQuestion.question }}</h2>
       </div>
 
+            <button
+        @click="resetGame"
+        class="fixed top-4 right-4 mb-4 bg-[#1BC29F] hover:bg-slate-600 px-4 py-2 rounded text-sm font-bold"
+      >
+        ← Torna alla Home
+      </button>
+
       <div class="grid grid-cols-1 gap-3">
-        <button
-          v-for="answer in currentQuestion.answers"
-          :key="answer"
-          v-show="!disabledAnswers.includes(answer)"
-          @click="selectAnswer(answer)"
-          :disabled="isAnswerRevealed"
-          :class="answerClasses(answer)"
-          class="border-0 rounded-full px-4 py-3 text-left transition-colors"
-        >
-          {{ answer }}
-        </button>
+              <button
+        v-for="(answer, index) in currentQuestion.answers"
+        :key="answer"
+        v-show="!disabledAnswers.includes(answer)"
+        @click="selectAnswer(answer)"
+        :disabled="isAnswerRevealed"
+        :class="answerClasses(answer)"
+        class="rounded-full px-4 py-3 text-left transition-colors flex items-center gap-3"
+      >
+        <span class="font-bold">{{ ['A', 'B', 'C', 'D'][index] }})</span>
+        <span>{{ answer }}</span>
+      </button>
       </div>
 
       <div class="mt-6 text-center"> 
@@ -139,12 +147,22 @@ function answerClasses(answer) {
 
     <!-- SCONFITTA -->
     <div v-else-if="gameStatus === 'lost'" class="text-center">
-      <h1 class="text-[150px] font-bold text-red-500 mb-4 font-titanone">GAME OVER &#128532</h1>
-      <p class="text-slate-400 mb-6">Hai raggiunto la domanda {{ currentIndex + 1 }}</p>
+      <h1 class="text-6xl sm:text-8xl md:text-[140px] lg:text-[180px] mb-4 text-[#FC3D4B] font-titanone text-center">GAME OVER</h1>
+      <p class="text-slate-400 mb-6">You’ve reached Question {{ currentIndex + 1 }}</p>
       <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-full font-black font-nunito">
         RETRY
       </button>
     </div>
+
+    
+  
+
+
+
+
+     <footer class="fixed bottom-0 left-0 right-0 text-center py-2 text-xs text-slate-500">
+      Made by Sean
+    </footer>
 
   </div>
 </template>

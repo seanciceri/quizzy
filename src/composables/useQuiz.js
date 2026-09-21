@@ -115,6 +115,7 @@ function useHint() {
   hintedAnswer.value = currentQuestion.value.correct_answer
 }
 
+
   function resetGame() {
     gameStatus.value = 'idle'
     questions.value = []
