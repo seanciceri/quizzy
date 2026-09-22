@@ -7,13 +7,6 @@
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'nunito';
-  src: url('./assets/fonts/Nunito-VariableFont_wght.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 
 @theme {
   --color-quiz-bg: #29165B;

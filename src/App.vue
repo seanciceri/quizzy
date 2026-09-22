@@ -1,5 +1,8 @@
 <script setup>
 import { useQuiz } from './composables/useQuiz'
+import AnswerButton from './components/AnswerButton.vue'
+import LifelinesPanel from './components/LifelinesPanel.vue'
+import FinalScreen from './components/FinalScreen.vue'
 
 // Chiamiamo il composable: da qui in poi abbiamo accesso
 // a tutto lo stato e le funzioni del gioco
@@ -59,14 +62,14 @@ function answerClasses(answer) {
       <p class="text-slate-400 mb-6">{{ errorMessage }}</p>
         <button
     @click="startGame"
-    class="bg-[#FCBC2C] hover:bg-[#F5A900] px-8 sm:px-12 md:px-16 lg:px-20 py-3 rounded-full text-2xl sm:text-3xl md:text-4xl lg:text-[50px] font-black transition-colors text-[#29165B] font-nunito"
+    class="bg-[#FCBC2C] hover:bg-[#F5A900] px-8 sm:px-12 md:px-16 lg:px-20 py-3 rounded-full text-2xl sm:text-3xl md:text-4xl lg:text-[50px] font-bold transition-colors text-[#29165B] font-quicksand"
   >
     START
   </button>
     </div>
 
     <!-- CARICAMENTO -->
-    <div v-else-if="gameStatus === 'loading'" class="text-center font-nunito">
+    <div v-else-if="gameStatus === 'loading'" class="text-center font-quicksand">
       <p class="text-xl">Loading questions...</p>
     </div>
 
@@ -81,7 +84,7 @@ function answerClasses(answer) {
       <button
         v-if="!lifelines.fiftyFifty.used"
         @click="useFiftyFifty"
-        class="mb-4 bg-[#2E8AFD] rounded-full hover:bg-[#176FD6] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
+        class="mb-4 bg-[#2E8AFD] rounded-full hover:bg-[#176FD6] px-4 py-2 rounded text-sm text-[#29165B] font-bold"
       >
         🌗 50:50
       </button>
@@ -89,7 +92,7 @@ function answerClasses(answer) {
             <button
         v-if="!lifelines.hint.used"
         @click="useHint"
-        class="mb-4 ml-2 bg-[#F53198] rounded-full hover:bg-[#D91F7D] px-4 py-2 rounded text-sm text-[#29165B] font-black font-nunito"
+        class="mb-4 ml-2 bg-[#F53198] rounded-full hover:bg-[#D91F7D] px-4 py-2 rounded text-sm text-[#29165B] font-bold"
       >
         &#x1F52E ASK THE GENIE
       </button>
@@ -106,32 +109,32 @@ function answerClasses(answer) {
       </button>
 
       <div class="grid grid-cols-1 gap-3">
-              <button
-        v-for="(answer, index) in currentQuestion.answers"
-        :key="answer"
-        v-show="!disabledAnswers.includes(answer)"
-        @click="selectAnswer(answer)"
-        :disabled="isAnswerRevealed"
-        :class="answerClasses(answer)"
-        class="rounded-full px-3 sm:px-4 py-3 sm:py-4 text-left transition-colors flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
-      >
-        <span class="font-bold">{{ ['A', 'B', 'C', 'D'][index] }})</span>
-        <span>{{ answer }}</span>
-      </button>
-      </div>
+  <AnswerButton
+    v-for="(answer, index) in currentQuestion.answers"
+    :key="answer"
+    :answer="answer"
+    :index="index"
+    :is-selected="selectedAnswer === answer"
+    :is-revealed="isAnswerRevealed"
+    :is-correct="answer === currentQuestion.correct_answer"
+    :is-hinted="hintedAnswer === answer"
+    :is-hidden="disabledAnswers.includes(answer)"
+    @select="selectAnswer"
+  />
+</div>
 
       <div class="mt-6 text-center"> 
         <button
           v-if="selectedAnswer && !isAnswerRevealed"
           @click="confirmAnswer"
-          class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-black font-nunito"
+          class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-bold"
         >
           FINAL ANSWER
         </button>
         <button
           v-else-if="isAnswerRevealed && selectedAnswer === currentQuestion.correct_answer"
           @click="nextQuestion"
-          class="bg-[#F5A905] hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold"
+          class="bg-[#F5A905] hover:bg-blue-700 px-6 py-2 rounded-lg font-bold"
         >
           NEXT QUESTION
         </button>
@@ -139,30 +142,13 @@ function answerClasses(answer) {
     </div>
 
     <!-- VITTORIA -->
-    <div v-else-if="gameStatus === 'won'" class="text-center">
-      <h1 class="text-4xl font-bold text-yellow-400 mb-4">YOU WIN 1.000.000 €! 🎉</h1>
-      <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
-        Gioca ancora
-      </button>
-    </div>
-
-    <!-- SCONFITTA -->
-    <div v-else-if="gameStatus === 'lost'" class="text-center">
-  <h1 class="text-4xl font-bold text-red-500 mb-4">Game Over</h1>
-  <p class="text-slate-400 mb-2">YOU'VE REACHED QUESTIONS {{ currentIndex + 1 }}</p>
-  <p class="text-xl font-bold text-yellow-400 mb-6">
-    YOU WIN €{{ guaranteedPrize.toLocaleString() }}
-  </p>
-  <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
-    RETRY
-  </button>
-</div>
-
-    
-  
-
-
-
+    <FinalScreen
+  v-else-if="gameStatus === 'won' || gameStatus === 'lost'"
+  :status="gameStatus"
+  :questions-reached="currentIndex + 1"
+  :prize="guaranteedPrize"
+  @restart="resetGame"
+/>
 
      <footer class="fixed bottom-0 left-0 right-0 text-center py-2 text-xs text-slate-500">
       Made by Sean
