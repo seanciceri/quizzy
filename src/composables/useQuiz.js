@@ -20,13 +20,13 @@ export function useQuiz() {
   const isAnswerRevealed = ref(false) // true dopo che l'utente conferma
   const gameStatus = ref('idle')     // 'idle' | 'loading' | 'playing' | 'won' | 'lost'
   const errorMessage = ref('')
+  const guaranteedPrize = ref(0)
   let lostTimeoutId = null
 
   // Stato degli aiuti (lifelines)
   const lifelines = ref({
     fiftyFifty: { used: false },
     audience: { used: false },
-    phone: { used: false },
     hint: { used: false },
   })
   const disabledAnswers = ref([]) // risposte nascoste dal 50:50
@@ -40,33 +40,41 @@ export function useQuiz() {
   // --- AZIONI (funzioni che modificano lo stato) ---
 
   async function startGame() {
-    clearTimeout(lostTimeoutId)
-    gameStatus.value = 'loading'
-    errorMessage.value = ''
-    try {
-      questions.value = await fetchQuestions(15)
-      currentIndex.value = 0
-      selectedAnswer.value = null
-      isAnswerRevealed.value = false
-      disabledAnswers.value = []
-      hintedAnswer.value = null
-      lifelines.value = {
-        fiftyFifty: { used: false },
-        audience: { used: false },
-        phone: { used: false },
-        hint: { used: false },
-      }
-      gameStatus.value = 'playing'
-    } catch (err) {
-      errorMessage.value = 'Impossibile caricare le domande. Riprova.'
-      gameStatus.value = 'idle'
+  gameStatus.value = 'loading'
+  errorMessage.value = ''
+  try {
+    // una sola chiamata, mix di difficoltà
+    const raw = await fetchQuestions(15)
+
+    // ordiniamo per difficoltà crescente: facile → media → difficile
+    const difficultyRank = { easy: 0, medium: 1, hard: 2 }
+    questions.value = [...raw].sort(
+      (a, b) => difficultyRank[a.difficulty] - difficultyRank[b.difficulty]
+    )
+
+    currentIndex.value = 0
+    selectedAnswer.value = null
+    isAnswerRevealed.value = false
+    disabledAnswers.value = []
+    hintedAnswer.value = null
+    guaranteedPrize.value = 0
+    lifelines.value = {
+      fiftyFifty: { used: false },
+      hint: { used: false },
+      changeQuestion: { used: false },
     }
+    gameStatus.value = 'playing'
+  } catch (err) {
+    errorMessage.value = err.message
+    gameStatus.value = 'idle'
   }
+}
 
   function selectAnswer(answer) {
     if (isAnswerRevealed.value) return // blocca cambi dopo la conferma
     selectedAnswer.value = answer
   }
+
 
   function confirmAnswer() {
   if (!selectedAnswer.value) return
@@ -82,15 +90,19 @@ export function useQuiz() {
 }
 
   function nextQuestion() {
-    if (isLastQuestion.value) {
-      gameStatus.value = 'won'
-      return
-    }
-    currentIndex.value++
-    selectedAnswer.value = null
-    isAnswerRevealed.value = false
-    disabledAnswers.value = []
-    hintedAnswer.value = null
+    if (SAFE_HAVENS.includes(currentIndex.value)) {
+    guaranteedPrize.value = PRIZE_LADDER[currentIndex.value]
+  }
+  if (isLastQuestion.value) {
+    gameStatus.value = 'won'
+    return
+  }
+      currentIndex.value++
+      selectedAnswer.value = null
+      isAnswerRevealed.value = false
+      disabledAnswers.value = []
+      hintedAnswer.value = null
+
   }
 
   // Aiuto 50:50 → nasconde 2 risposte sbagliate
@@ -147,5 +159,6 @@ function useHint() {
     resetGame,
     PRIZE_LADDER,
     SAFE_HAVENS,
+    guaranteedPrize,
   }
 }

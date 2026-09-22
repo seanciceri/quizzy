@@ -21,6 +21,7 @@ const {
   resetGame,
   hintedAnswer,
   useHint,
+  guaranteedPrize,
 } = useQuiz()
 
 // Funzione di supporto solo per la UI: decide il colore del bottone
@@ -66,13 +67,13 @@ function answerClasses(answer) {
 
     <!-- CARICAMENTO -->
     <div v-else-if="gameStatus === 'loading'" class="text-center font-nunito">
-      <p class="text-xl">Caricamento domande...</p>
+      <p class="text-xl">Loading questions...</p>
     </div>
 
     <!-- GIOCO IN CORSO -->
     <div v-else-if="gameStatus === 'playing' && currentQuestion" class="w-full max-w-2xl">
       <div class="flex justify-between mb-4 text-slate-400 text-base sm:text-lg">
-        <span>Domanda {{ currentIndex + 1 }} / 15</span>
+        <span>Question {{ currentIndex + 1 }} / 15</span>
         <span class="font-bold text-yellow-400">€{{ currentPrize.toLocaleString() }}</span>
       </div>
 
@@ -101,7 +102,7 @@ function answerClasses(answer) {
         @click="resetGame"
         class="fixed top-4 right-4 mb-4 bg-[#1BC29F] hover:bg-slate-600 px-4 py-2 rounded text-sm font-bold"
       >
-        ← Torna alla Home
+        ← Back Home
       </button>
 
       <div class="grid grid-cols-1 gap-3">
@@ -132,14 +133,14 @@ function answerClasses(answer) {
           @click="nextQuestion"
           class="bg-[#F5A905] hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold"
         >
-          Prossima domanda
+          NEXT QUESTION
         </button>
       </div>
     </div>
 
     <!-- VITTORIA -->
     <div v-else-if="gameStatus === 'won'" class="text-center">
-      <h1 class="text-4xl font-bold text-yellow-400 mb-4">Hai vinto 1.000.000 €! 🎉</h1>
+      <h1 class="text-4xl font-bold text-yellow-400 mb-4">YOU WIN 1.000.000 €! 🎉</h1>
       <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
         Gioca ancora
       </button>
@@ -147,12 +148,15 @@ function answerClasses(answer) {
 
     <!-- SCONFITTA -->
     <div v-else-if="gameStatus === 'lost'" class="text-center">
-      <h1 class="text-6xl sm:text-8xl md:text-[140px] lg:text-[180px] mb-4 text-[#FC3D4B] font-titanone text-center">GAME OVER</h1>
-      <p class="text-slate-400 mb-6">You’ve reached Question {{ currentIndex + 1 }}</p>
-      <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-full font-black font-nunito">
-        RETRY
-      </button>
-    </div>
+  <h1 class="text-4xl font-bold text-red-500 mb-4">Game Over</h1>
+  <p class="text-slate-400 mb-2">YOU'VE REACHED QUESTIONS {{ currentIndex + 1 }}</p>
+  <p class="text-xl font-bold text-yellow-400 mb-6">
+    YOU WIN €{{ guaranteedPrize.toLocaleString() }}
+  </p>
+  <button @click="resetGame" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
+    RETRY
+  </button>
+</div>
 
     
   
